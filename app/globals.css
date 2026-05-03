@@ -10,13 +10,17 @@
   --primary-strong: #115e59;
   --accent: #d97706;
   --surface: rgba(255, 255, 255, 0.9);
+  --font-sans:
+    "Avenir Next", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono:
+    "IBM Plex Mono", "SFMono-Regular", "Consolas", "Liberation Mono", monospace;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-space-grotesk);
-  --font-mono: var(--font-ibm-plex-mono);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 }
 
 * {
@@ -33,7 +37,7 @@ html {
 body {
   min-height: 100vh;
   color: var(--foreground);
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-sans);
 }
 
 a {
