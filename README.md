@@ -1,0 +1,141 @@
+# AI Automation Hustle - Lead Qualification & Booking System
+
+Production-ready SaaS MVP built with `Next.js App Router`, `Prisma + PostgreSQL`, `NextAuth credentials`, `OpenAI`, and `n8n-compatible webhooks`.
+
+## Folder structure
+
+```text
+app/
+  api/
+  book/[leadId]/
+  chat/
+  dashboard/
+  login/
+components/
+  booking/
+  chat/
+  dashboard/
+  ui/
+lib/
+prisma/
+tests/
+types/
+```
+
+## Core features
+
+- AI chat captures and qualifies leads from a conversational UI.
+- Structured JSON extraction stores `name`, `service`, `budget`, and `datetime`.
+- Qualified leads book time slots with double-booking protection.
+- Lead creation and booking events can trigger n8n webhooks.
+- Admin dashboard includes lead table, bookings table, pipeline board, and conversion metrics.
+
+## Environment variables
+
+Copy `.env.example` to `.env` and set:
+
+- `DATABASE_URL`
+- `OPENAI_API_KEY`
+- `OPENAI_MODEL`
+- `WEBHOOK_URL`
+- `NEXTAUTH_SECRET`
+- `NEXTAUTH_URL`
+- `ADMIN_EMAIL`
+- `ADMIN_PASSWORD`
+- `QUALIFICATION_BUDGET_THRESHOLD`
+- `BOOKING_SLOT_MINUTES`
+- `BUSINESS_HOURS_START`
+- `BUSINESS_HOURS_END`
+- `BUSINESS_TIMEZONE`
+- `BUSINESS_DAYS`
+- `BOOKING_WINDOW_DAYS`
+
+## Setup
+
+1. Install dependencies:
+
+   ```bash
+   pnpm install
+   ```
+
+2. Start PostgreSQL locally:
+
+   ```bash
+   docker compose up -d postgres
+   ```
+
+3. Generate Prisma client:
+
+   ```bash
+   pnpm prisma:generate
+   ```
+
+4. Run the initial migration:
+
+   ```bash
+   pnpm prisma:migrate --name init
+   ```
+
+5. Seed the admin user:
+
+   ```bash
+   pnpm db:seed
+   ```
+
+6. Start the app:
+
+   ```bash
+   pnpm dev
+   ```
+
+7. Run tests:
+
+   ```bash
+   pnpm test
+   ```
+
+## Local URLs
+
+- Public site: `http://localhost:3000`
+- Chat: `http://localhost:3000/chat`
+- Admin login: `http://localhost:3000/login`
+- Dashboard: `http://localhost:3000/dashboard`
+
+## Example API calls
+
+Create a lead manually:
+
+```bash
+curl -X POST http://localhost:3000/api/lead \
+  -H "Content-Type: application/json" \
+  -d "{\"name\":\"Jamie\",\"service\":\"AI lead intake automation\",\"budget\":2500}"
+```
+
+Send a chat message:
+
+```bash
+curl -X POST http://localhost:3000/api/chat \
+  -H "Content-Type: application/json" \
+  -d "{\"sessionToken\":\"local-demo-session-12345\",\"message\":\"Hi, I'm Jamie. I need AI lead intake automation with a budget of 2500 dollars next week.\"}"
+```
+
+Get available slots:
+
+```bash
+curl http://localhost:3000/api/slots
+```
+
+Create a booking:
+
+```bash
+curl -X POST http://localhost:3000/api/booking \
+  -H "Content-Type: application/json" \
+  -d "{\"leadId\":\"REPLACE_WITH_LEAD_ID\",\"datetime\":\"2026-05-05T02:00:00.000Z\"}"
+```
+
+## Deployment notes
+
+- Works well on Vercel, Railway, Render, or any Node-compatible platform.
+- Provision PostgreSQL first, then set `DATABASE_URL`.
+- Seed the admin user after the first deployment.
+- Keep `NEXTAUTH_URL` aligned with the deployed domain.

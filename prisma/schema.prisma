@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum LeadStatus {
+  NEW
+  QUALIFIED
+  BOOKED
+  FOLLOW_UP
+  CLOSED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum ChatRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Lead {
+  id                  String      @id @default(cuid())
+  name                String?
+  email               String?
+  service             String?
+  budget              Int?
+  status              LeadStatus  @default(NEW)
+  conversationSummary String?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  booking             Booking?
+  chatSessions        ChatSession[]
+}
+
+model Booking {
+  id        String        @id @default(cuid())
+  leadId    String        @unique
+  datetime  DateTime
+  status    BookingStatus @default(CONFIRMED)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  lead      Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([datetime])
+}
+
+model ChatSession {
+  id           String        @id @default(cuid())
+  sessionToken String        @unique
+  leadId       String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  lead         Lead?         @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  messages     ChatMessage[]
+}
+
+model ChatMessage {
+  id            String      @id @default(cuid())
+  sessionId      String
+  role          ChatRole
+  content       String
+  extractedJson Json?
+  createdAt     DateTime    @default(now())
+  session       ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+}
