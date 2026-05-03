@@ -50,4 +50,4 @@ jobs:
           BUSINESS_TIMEZONE: Asia/Bangkok
           BUSINESS_DAYS: 1,2,3,4,5
           BOOKING_WINDOW_DAYS: "7"
-        run: pnpm build
+        run: pnpm exec next build --webpack
