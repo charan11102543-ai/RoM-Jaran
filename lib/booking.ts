@@ -1,4 +1,4 @@
-import { addDays, addMinutes, getDay, isAfter } from "date-fns";
+import { addDays, addMinutes } from "date-fns";
 import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 
 function parseClock(value: string) {
@@ -52,7 +52,7 @@ export function generateAvailableSlots(input: {
 
     while (slot < cutoff) {
       const iso = slot.toISOString();
-      if (isAfter(slot, now) && !bookedSet.has(iso)) {
+      if (slot > now && !bookedSet.has(iso)) {
         slots.push(iso);
       }
       slot = addMinutes(slot, slotMinutes);
@@ -80,5 +80,5 @@ export function isSlotInsideBusinessHours(input: {
 }
 
 export function getWeekdayName(date: Date) {
-  return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][getDay(date)];
+  return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][date.getDay()];
 }

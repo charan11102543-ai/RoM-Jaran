@@ -1,6 +1,8 @@
+export const dynamic = "force-dynamic";
+
 import { BookingStatus } from "@prisma/client";
-import { db } from "@/lib/db";
-import { getEnv } from "@/lib/env";
+import { prisma } from "@/lib/prisma";
+import { env } from "@/lib/env";
 import { isBusinessDay, isSlotInsideBusinessHours } from "@/lib/booking";
 import { bookingPayloadSchema } from "@/lib/validators";
 import { sendWebhookEvent } from "@/lib/webhook";
@@ -8,10 +10,11 @@ import { sendWebhookEvent } from "@/lib/webhook";
 export async function POST(request: Request) {
   try {
     const body = bookingPayloadSchema.parse(await request.json());
-    const env = getEnv();
     const requestedDate = new Date(body.datetime);
 
-    if (!isBusinessDay(requestedDate, env.BUSINESS_TIMEZONE, env.BUSINESS_DAYS)) {
+    const businessDays = env.BUSINESS_DAYS.split(",").map((d) => parseInt(d.trim()));
+
+    if (!isBusinessDay(requestedDate, env.BUSINESS_TIMEZONE, businessDays)) {
       return Response.json({ error: "Requested slot is outside business days." }, { status: 400 });
     }
 
@@ -26,7 +29,7 @@ export async function POST(request: Request) {
       return Response.json({ error: "Requested slot is outside business hours." }, { status: 400 });
     }
 
-    const existing = await db.booking.findFirst({
+    const existing = await prisma.booking.findFirst({
       where: {
         datetime: requestedDate,
         status: BookingStatus.CONFIRMED,
@@ -37,7 +40,7 @@ export async function POST(request: Request) {
       return Response.json({ error: "That time slot is already booked." }, { status: 409 });
     }
 
-    const booking = await db.booking.create({
+    const booking = await prisma.booking.create({
       data: {
         leadId: body.leadId,
         datetime: requestedDate,
@@ -45,7 +48,7 @@ export async function POST(request: Request) {
       },
     });
 
-    await db.lead.update({
+    await prisma.lead.update({
       where: { id: body.leadId },
       data: { status: "BOOKED" },
     });

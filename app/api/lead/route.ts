@@ -1,34 +1,76 @@
-import { determineLeadStatus } from "@/lib/qualification";
-import { db } from "@/lib/db";
-import { getEnv } from "@/lib/env";
-import { leadPayloadSchema } from "@/lib/validators";
-import { sendWebhookEvent } from "@/lib/webhook";
+export const dynamic = "force-dynamic";
 
-export async function POST(request: Request) {
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { z } from "zod";
+
+const leadSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email().optional().nullable(),
+  service: z.string().min(1),
+  budget: z.number().positive(),
+  status: z.enum(["NEW", "QUALIFIED", "BOOKED", "FOLLOW_UP", "CLOSED"]).optional(),
+  conversationSummary: z.string().optional().nullable(),
+});
+
+export async function POST(request: NextRequest) {
   try {
-    const body = leadPayloadSchema.parse(await request.json());
-    const env = getEnv();
+    const body = await request.json();
+    const validated = leadSchema.parse(body);
 
-    const lead = await db.lead.create({
+    const lead = await prisma.lead.create({
       data: {
-        ...body,
-        status: determineLeadStatus({
-          service: body.service,
-          budget: body.budget,
-          threshold: env.QUALIFICATION_BUDGET_THRESHOLD,
-        }),
+        name: validated.name,
+        email: validated.email || null,
+        service: validated.service,
+        budget: validated.budget,
+        status: validated.status || "NEW",
+        conversationSummary: validated.conversationSummary || null,
       },
     });
 
-    await sendWebhookEvent(env.WEBHOOK_URL, {
-      event: "lead.created",
-      lead,
-      source: "api",
+    // Trigger webhook if configured
+    if (process.env.WEBHOOK_URL) {
+      try {
+        await fetch(process.env.WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event: "lead.created",
+            lead,
+          }),
+        });
+      } catch (error) {
+        console.error("Webhook error:", error);
+      }
+    }
+
+    return NextResponse.json(lead, { status: 201 });
+  } catch (error) {
+    console.error("Lead creation error:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to create lead",
+        message: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 400 }
+    );
+  }
+}
+
+export async function GET() {
+  try {
+    const leads = await prisma.lead.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 100,
     });
 
-    return Response.json({ lead }, { status: 201 });
+    return NextResponse.json(leads);
   } catch (error) {
-    console.error(error);
-    return Response.json({ error: "Unable to create lead." }, { status: 400 });
+    console.error("Get leads error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch leads" },
+      { status: 500 }
+    );
   }
 }

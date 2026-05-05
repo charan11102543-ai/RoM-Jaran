@@ -1,19 +1,13 @@
 import { defineConfig } from "vitest/config";
-import path from "node:path";
+import { fileURLToPath, URL } from "node:url";
 
 export default defineConfig({
-  test: {
-    environment: "node",
-    globals: true,
-    coverage: {
-      provider: "v8",
-      reporter: ["text", "html"],
-    },
-    setupFiles: ["./vitest.setup.ts"],
-  },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname),
+      "@": fileURLToPath(new URL(".", import.meta.url)),
     },
+  },
+  test: {
+    environment: "node",
   },
 });

@@ -3,7 +3,7 @@ import { BookingsTable } from "@/components/dashboard/bookings-table";
 import { LeadsTable } from "@/components/dashboard/leads-table";
 import { MetricCard } from "@/components/dashboard/metric-card";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
-import { db } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 import { getDashboardStats } from "@/lib/stats";
 import { formatPercent } from "@/lib/utils";
 
@@ -12,8 +12,8 @@ export const dynamic = "force-dynamic";
 export default async function DashboardPage() {
   const [stats, recentLeads, recentBookings] = await Promise.all([
     getDashboardStats(),
-    db.lead.findMany({ orderBy: { createdAt: "desc" }, take: 5 }),
-    db.booking.findMany({
+    prisma.lead.findMany({ orderBy: { createdAt: "desc" }, take: 5 }),
+    prisma.booking.findMany({
       orderBy: { datetime: "asc" },
       take: 5,
       include: { lead: { select: { name: true, service: true } } },

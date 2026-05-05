@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { Brand } from "@/components/brand";
 import { SlotPicker } from "@/components/booking/slot-picker";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
-import { db } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 import { formatCurrency } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -14,7 +14,7 @@ export default async function BookingPage({
 }) {
   const { leadId } = await params;
 
-  const lead = await db.lead.findUnique({
+  const lead = await prisma.lead.findUnique({
     where: { id: leadId },
   });
 

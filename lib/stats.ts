@@ -1,11 +1,11 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 
 export async function getDashboardStats() {
   const [totalLeads, qualifiedLeads, bookedLeads] = await Promise.all([
-    db.lead.count(),
-    db.lead.count({ where: { status: "QUALIFIED" } }),
-    db.lead.count({ where: { status: "BOOKED" } }),
+    prisma.lead.count(),
+    prisma.lead.count({ where: { status: "QUALIFIED" } }),
+    prisma.lead.count({ where: { status: "BOOKED" } }),
   ]);
 
   return {

@@ -1,6 +1,13 @@
 import "server-only";
 
-export async function sendWebhookEvent(url: string, payload: Record<string, unknown>) {
+export async function sendWebhookEvent(
+  url: string | undefined,
+  payload: Record<string, unknown>
+) {
+  if (!url) {
+    return;
+  }
+
   try {
     const response = await fetch(url, {
       method: "POST",
