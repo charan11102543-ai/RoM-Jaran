@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ai_automation_hustle?schema=public
+          OPENAI_API_KEY: sk-ci-placeholder
+          OPENAI_MODEL: gpt-4o-mini
+          WEBHOOK_URL: https://example.com/webhook/lead-created
+          NEXTAUTH_SECRET: ci-placeholder-secret-123456
+          NEXTAUTH_URL: http://localhost:3000
+          ADMIN_EMAIL: admin@example.com
+          ADMIN_PASSWORD: ChangeMe123!
+          QUALIFICATION_BUDGET_THRESHOLD: "1000"
+          BOOKING_SLOT_MINUTES: "30"
+          BUSINESS_HOURS_START: "09:00"
+          BUSINESS_HOURS_END: "18:00"
+          BUSINESS_TIMEZONE: Asia/Bangkok
+          BUSINESS_DAYS: 1,2,3,4,5
+          BOOKING_WINDOW_DAYS: "7"
+        run: pnpm exec next build --webpack

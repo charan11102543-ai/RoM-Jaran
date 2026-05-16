@@ -1,0 +1,188 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum LeadStatus {
+  NEW
+  QUALIFIED
+  BOOKED
+  FOLLOW_UP
+  CLOSED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum ChatRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Lead {
+  id                  String      @id @default(cuid())
+  name                String?
+  email               String?
+  service             String?
+  budget              Int?
+  status              LeadStatus  @default(NEW)
+  conversationSummary String?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  booking             Booking?
+  chatSessions        ChatSession[]
+}
+
+model Booking {
+  id        String        @id @default(cuid())
+  leadId    String        @unique
+  datetime  DateTime
+  status    BookingStatus @default(CONFIRMED)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  lead      Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([datetime])
+}
+
+model ChatSession {
+  id           String        @id @default(cuid())
+  sessionToken String        @unique
+  leadId       String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  lead         Lead?         @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  messages     ChatMessage[]
+}
+
+model ChatMessage {
+  id            String      @id @default(cuid())
+  sessionId      String
+  role          ChatRole
+  content       String
+  extractedJson Json?
+  createdAt     DateTime    @default(now())
+  session       ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+}
+
+// ─── Agent Command Center ───────────────────────────────────────────────────
+
+enum AgentType {
+  LEAD_QUALIFIER
+  CONTENT_AUTOMATION
+  EMAIL_AUTOMATION
+  N8N_ORCHESTRATOR
+  CRM_MANAGER
+}
+
+enum AgentEnvironment {
+  LOCAL
+  CLOUD
+}
+
+enum TaskStatus {
+  QUEUED
+  RUNNING
+  BLOCKED
+  REVIEW
+  DONE
+  FAILED
+}
+
+enum TaskPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+model AgentRegistry {
+  id          String           @id @default(cuid())
+  name        String
+  type        AgentType
+  environment AgentEnvironment @default(LOCAL)
+  description String?
+  endpoint    String?
+  isActive    Boolean          @default(true)
+  metadata    Json?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  tasks       AgentTask[]
+  spaces      SpaceAgent[]
+}
+
+model Space {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  color       String       @default("#0f766e")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  tasks       AgentTask[]
+  agents      SpaceAgent[]
+}
+
+model SpaceAgent {
+  spaceId   String
+  agentId   String
+  space     Space         @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  agent     AgentRegistry @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@id([spaceId, agentId])
+}
+
+model AgentTask {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus    @default(QUEUED)
+  priority    TaskPriority  @default(NORMAL)
+  agentId     String?
+  spaceId     String?
+  input       Json?
+  output      Json?
+  errorMsg    String?
+  reviewNote  String?
+  startedAt   DateTime?
+  completedAt DateTime?
+  archivedAt  DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  agent       AgentRegistry? @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  space       Space?         @relation(fields: [spaceId], references: [id], onDelete: SetNull)
+  logs        ExecutionLog[]
+
+  @@index([status])
+  @@index([agentId])
+  @@index([spaceId])
+  @@index([archivedAt])
+}
+
+model ExecutionLog {
+  id        String    @id @default(cuid())
+  taskId    String
+  level     String    @default("info")
+  message   String
+  metadata  Json?
+  createdAt DateTime  @default(now())
+  task      AgentTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId, createdAt])
+}
