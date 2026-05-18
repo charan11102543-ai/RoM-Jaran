@@ -9,7 +9,7 @@ const schema = z.object({
   status: z.enum(["QUEUED", "RUNNING", "BLOCKED", "REVIEW", "DONE", "FAILED"]),
   reviewNote: z.string().optional(),
   errorMsg: z.string().optional(),
-  output: z.record(z.unknown()).optional(),
+  output: z.record(z.string(), z.unknown()).optional(),
 });
 
 export async function PATCH(

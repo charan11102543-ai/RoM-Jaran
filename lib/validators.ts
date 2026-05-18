@@ -36,3 +36,17 @@ export const bookingPayloadSchema = z.object({
 });
 
 export const leadStatusSchema = z.enum(["NEW", "QUALIFIED", "BOOKED", "FOLLOW_UP", "CLOSED"]);
+
+export const agencyPackageSchema = z.enum(["starter", "growth", "scale", "unsure"]);
+
+export const intakePayloadSchema = z.object({
+  name: z.string().trim().min(1, "กรุณากรอกชื่อ").max(120),
+  clinic: z.string().trim().min(1, "กรุณากรอกชื่อคลินิก").max(200),
+  phone: z.string().trim().min(8, "กรุณากรอกเบอร์โทร").max(40),
+  email: z.string().email("อีเมลไม่ถูกต้อง").optional().or(z.literal("")),
+  lineId: z.string().trim().max(100).optional().or(z.literal("")),
+  packageInterest: agencyPackageSchema.default("unsure"),
+  message: z.string().trim().max(2000).optional().or(z.literal("")),
+});
+
+export type IntakePayload = z.infer<typeof intakePayloadSchema>;

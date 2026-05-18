@@ -13,10 +13,17 @@ export function usePolling(
   { intervalMs = 10_000, enabled = true, onError }: UsePollingOptions = {},
 ) {
   const fnRef = useRef(fn);
-  fnRef.current = fn;
-
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const inFlightRef = useRef(false);
+  const onErrorRef = useRef(onError);
+
+  useEffect(() => {
+    fnRef.current = fn;
+  }, [fn]);
+
+  useEffect(() => {
+    onErrorRef.current = onError;
+  }, [onError]);
 
   const stop = useCallback(() => {
     if (timerRef.current !== null) {
@@ -24,9 +31,6 @@ export function usePolling(
       timerRef.current = null;
     }
   }, []);
-
-  const onErrorRef = useRef(onError);
-  onErrorRef.current = onError;
 
   const start = useCallback(() => {
     stop();

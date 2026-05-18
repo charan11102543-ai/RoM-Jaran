@@ -56,6 +56,7 @@ export function TaskDetailPanel({ task: initialTask, onClose, onStatusChange }: 
 
   // fetch full task details (with input/output) and logs
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoadingLogs(true);
     setLogsError("");
     Promise.all([
@@ -80,6 +81,7 @@ export function TaskDetailPanel({ task: initialTask, onClose, onStatusChange }: 
 
   // sync external task changes back into local state
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTask(initialTask);
   }, [initialTask]);
 

@@ -2,6 +2,18 @@
 
 Production-ready SaaS MVP built with `Next.js App Router`, `Prisma + PostgreSQL`, `NextAuth credentials`, `OpenAI`, and `n8n-compatible webhooks`.
 
+## Business Model
+
+Agency offering: **Setup 15,000 THB + Retainer 6,000–15,000 THB/month** for Thai clinics (dental, med spa, aesthetic).
+
+Three retainer packages: **Starter / Growth / Scale** — see [SYSTEM_BLUEPRINT_PHASE1.md](SYSTEM_BLUEPRINT_PHASE1.md) for full breakdown.
+
+Sales flow:
+1. Prospect visits `/` (landing) → `/pricing` → submits `/intake` form
+2. `/api/intake` saves Lead + fires `ADMIN_NOTIFY_WEBHOOK_URL` (Slack/Discord)
+3. Agency schedules demo call → quote → Stripe Payment Link (setup)
+4. Onboard new client per [docs/CLIENT_DEPLOYMENT.md](docs/CLIENT_DEPLOYMENT.md) — 1 day per client
+
 ## Folder structure
 
 ```text
@@ -96,10 +108,13 @@ Copy `.env.example` to `.env` and set:
 
 ## Local URLs
 
-- Public site: `http://localhost:3000`
-- Chat: `http://localhost:3000/chat`
+- Landing (Thai sales): `http://localhost:3000`
+- Pricing: `http://localhost:3000/pricing`
+- Agency intake form: `http://localhost:3000/intake`
+- Patient demo chat: `http://localhost:3000/chat`
 - Admin login: `http://localhost:3000/login`
 - Dashboard: `http://localhost:3000/dashboard`
+- Command Center (Kanban): `http://localhost:3000/dashboard/command-center`
 
 ## Example API calls
 

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireAdminApiSession } from "@/lib/auth";
@@ -9,7 +10,7 @@ const createSchema = z.object({
   environment: z.enum(["LOCAL", "CLOUD"]).default("LOCAL"),
   description: z.string().optional(),
   endpoint: z.string().url().optional().or(z.literal("")),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 export async function GET() {
@@ -39,7 +40,7 @@ export async function POST(req: NextRequest) {
 
   const { endpoint, ...rest } = parsed.data;
   const agent = await db.agentRegistry.create({
-    data: { ...rest, endpoint: endpoint || null },
+    data: { ...rest, endpoint: endpoint || null } as Prisma.AgentRegistryCreateInput,
   });
 
   return NextResponse.json(agent, { status: 201 });

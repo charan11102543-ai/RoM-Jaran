@@ -1,6 +1,7 @@
 import { determineLeadStatus } from "@/lib/qualification";
 import { db } from "@/lib/db";
 import { getEnv } from "@/lib/env";
+import { notifyAdminLead } from "@/lib/notifications";
 import { leadPayloadSchema } from "@/lib/validators";
 import { sendWebhookEvent } from "@/lib/webhook";
 
@@ -27,6 +28,17 @@ export async function POST(request: Request) {
         source: "api",
       });
     }
+
+    await notifyAdminLead(
+      {
+        source: "api",
+        leadId: lead.id,
+        name: lead.name,
+        email: lead.email,
+        dashboardUrl: `${env.NEXTAUTH_URL}/dashboard/leads`,
+      },
+      env.ADMIN_NOTIFY_WEBHOOK_URL || undefined,
+    );
 
     return Response.json({ lead }, { status: 201 });
   } catch (error) {

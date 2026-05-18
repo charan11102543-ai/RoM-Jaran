@@ -9,14 +9,14 @@ const createTaskSchema = z.object({
   priority: z.enum(["LOW", "NORMAL", "HIGH", "URGENT"]).default("NORMAL"),
   agentId: z.string().optional(),
   spaceId: z.string().optional(),
-  input: z.record(z.unknown()).optional(),
+  input: z.record(z.string(), z.unknown()).optional(),
 });
 
 const statusSchema = z.object({
   status: z.enum(["QUEUED", "RUNNING", "BLOCKED", "REVIEW", "DONE", "FAILED"]),
   reviewNote: z.string().optional(),
   errorMsg: z.string().optional(),
-  output: z.record(z.unknown()).optional(),
+  output: z.record(z.string(), z.unknown()).optional(),
 });
 
 const createAgentSchema = z.object({
@@ -25,7 +25,7 @@ const createAgentSchema = z.object({
   environment: z.enum(["LOCAL", "CLOUD"]).default("LOCAL"),
   description: z.string().optional(),
   endpoint: z.string().url().optional().or(z.literal("")),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 const createSpaceSchema = z.object({

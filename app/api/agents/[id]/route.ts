@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireAdminApiSession } from "@/lib/auth";
@@ -10,7 +11,7 @@ const patchSchema = z.object({
   endpoint: z.string().url().optional().or(z.literal("")).optional(),
   isActive: z.boolean().optional(),
   environment: z.enum(["LOCAL", "CLOUD"]).optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 export async function PATCH(
@@ -29,7 +30,10 @@ export async function PATCH(
 
   let agent;
   try {
-    agent = await db.agentRegistry.update({ where: { id }, data: parsed.data });
+    agent = await db.agentRegistry.update({
+      where: { id },
+      data: parsed.data as Prisma.AgentRegistryUpdateInput,
+    });
   } catch (err) {
     if (isPrismaNotFound(err)) return NextResponse.json({ error: "Agent not found" }, { status: 404 });
     throw err;

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireAdminApiSession } from "@/lib/auth";
@@ -6,7 +7,7 @@ import { requireAdminApiSession } from "@/lib/auth";
 const createSchema = z.object({
   level: z.enum(["debug", "info", "warn", "error"]).default("info"),
   message: z.string().min(1),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 export async function GET(
@@ -44,7 +45,7 @@ export async function POST(
   }
 
   const log = await db.executionLog.create({
-    data: { taskId: id, ...parsed.data },
+    data: { taskId: id, ...parsed.data } as Prisma.ExecutionLogUncheckedCreateInput,
   });
 
   return NextResponse.json(log, { status: 201 });

@@ -25,6 +25,15 @@ const envSchema = z.object({
         .filter((item) => Number.isInteger(item) && item >= 0 && item <= 6),
     ),
   BOOKING_WINDOW_DAYS: z.coerce.number().int().positive().default(7),
+
+  ADMIN_NOTIFY_WEBHOOK_URL: z.string().url().optional().or(z.literal("")),
+  STRIPE_PAYMENT_LINK_SETUP: z.string().url().optional().or(z.literal("")),
+  STRIPE_PAYMENT_LINK_STARTER: z.string().url().optional().or(z.literal("")),
+  STRIPE_PAYMENT_LINK_GROWTH: z.string().url().optional().or(z.literal("")),
+  STRIPE_PAYMENT_LINK_SCALE: z.string().url().optional().or(z.literal("")),
+  BUSINESS_NAME: z.string().default("AI Automation Hustle"),
+  BUSINESS_LINE_OA_URL: z.string().url().optional().or(z.literal("")),
+  BUSINESS_CONTACT_EMAIL: z.string().email().optional().or(z.literal("")),
 });
 
 let cachedEnv: z.infer<typeof envSchema> | null = null;

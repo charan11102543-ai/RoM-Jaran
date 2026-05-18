@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireAdminApiSession } from "@/lib/auth";
@@ -9,7 +10,7 @@ const createSchema = z.object({
   priority: z.enum(["LOW", "NORMAL", "HIGH", "URGENT"]).default("NORMAL"),
   agentId: z.string().optional(),
   spaceId: z.string().optional(),
-  input: z.record(z.unknown()).optional(),
+  input: z.record(z.string(), z.unknown()).optional(),
 });
 
 const TASK_LIMIT_DEFAULT = 200;
@@ -72,7 +73,7 @@ export async function POST(req: NextRequest) {
   }
 
   const task = await db.agentTask.create({
-    data: parsed.data,
+    data: parsed.data as Prisma.AgentTaskCreateInput,
     include: {
       agent: { select: { id: true, name: true, type: true } },
       space: { select: { id: true, name: true, color: true } },
