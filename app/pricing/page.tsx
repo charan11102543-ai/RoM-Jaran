@@ -3,6 +3,7 @@ import { Check } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { RoiCalculator } from "@/components/pricing/roi-calculator";
 import { getEnv } from "@/lib/env";
 
 export const metadata = {
@@ -74,9 +75,14 @@ export default function PricingPage() {
       <div className="mx-auto flex max-w-7xl flex-col gap-10">
         <header className="flex items-center justify-between">
           <Link href="/"><Brand /></Link>
-          <Link href="/intake" className={buttonVariants({ variant: "outline" })}>
-            นัด Demo
-          </Link>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link href="/case-study" className="text-sm font-medium hover:text-[var(--accent)]">
+              Case Study
+            </Link>
+            <Link href="/intake" className={buttonVariants({ variant: "outline" })}>
+              นัด Demo
+            </Link>
+          </div>
         </header>
 
         <section className="text-center">
@@ -88,6 +94,11 @@ export default function PricingPage() {
             ทุกแพ็กเกจรวม <strong>ค่าติดตั้งระบบครั้งเดียว 15,000 บาท</strong> (รวม training + integration)
             ค่าบริการรายเดือนเริ่มหลังเปิดใช้งาน ยกเลิกได้ทุกเมื่อ
           </p>
+          <div className="mt-6 flex justify-center">
+            <Link href="/case-study" className={buttonVariants({ variant: "ghost" })}>
+              ดูตัวอย่างผลลัพธ์ / Case Study
+            </Link>
+          </div>
         </section>
 
         <section className="grid gap-6 md:grid-cols-3">
@@ -144,6 +155,8 @@ export default function PricingPage() {
           ))}
         </section>
 
+        <RoiCalculator />
+
         <section className="rounded-[32px] border border-[var(--border)] bg-white p-8 md:p-10">
           <h2 className="text-2xl font-semibold">ค่าติดตั้งรวมอะไรบ้าง</h2>
           <div className="mt-6 grid gap-6 md:grid-cols-2">
@@ -178,7 +191,7 @@ export default function PricingPage() {
         </section>
 
         <section className="text-center text-sm text-[var(--muted-foreground)]">
-          ยังไม่แน่ใจว่าเหมาะแพ็กเกจไหน? <Link href="/intake" className="text-[var(--accent)] hover:underline">นัดคุย 20 นาที</Link> เราจะแนะนำให้ฟรี
+          ยังไม่แน่ใจว่าเหมาะแพ็กเกจไหน? <Link href="/case-study" className="text-[var(--accent)] hover:underline">ดูตัวอย่างผลลัพธ์</Link> หรือ <Link href="/intake" className="text-[var(--accent)] hover:underline">นัดคุย 20 นาที</Link> เราจะแนะนำให้ฟรี
         </section>
       </div>
     </main>

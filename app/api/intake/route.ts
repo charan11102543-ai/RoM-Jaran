@@ -45,6 +45,8 @@ export async function POST(request: Request) {
   await notifyAdminLead(
     {
       source: "agency-intake",
+      sourcePage: request.headers.get("referer"),
+      createdAt: new Date().toISOString(),
       leadId: lead.id,
       name: payload.name,
       email: payload.email || null,

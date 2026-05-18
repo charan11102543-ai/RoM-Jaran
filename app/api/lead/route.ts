@@ -32,6 +32,8 @@ export async function POST(request: Request) {
     await notifyAdminLead(
       {
         source: "api",
+        sourcePage: request.headers.get("referer"),
+        createdAt: new Date().toISOString(),
         leadId: lead.id,
         name: lead.name,
         email: lead.email,

@@ -33,7 +33,17 @@ const envSchema = z.object({
   STRIPE_PAYMENT_LINK_SCALE: z.string().url().optional().or(z.literal("")),
   BUSINESS_NAME: z.string().default("AI Automation Hustle"),
   BUSINESS_LINE_OA_URL: z.string().url().optional().or(z.literal("")),
+  BUSINESS_LINE_OA_ID: z.string().optional().or(z.literal("")),
   BUSINESS_CONTACT_EMAIL: z.string().email().optional().or(z.literal("")),
+  BUSINESS_CONTACT_PHONE: z.string().optional().or(z.literal("")),
+
+  // PromptPay (Thai market preferred over Stripe for SMB)
+  PROMPTPAY_NUMBER: z.string().optional().or(z.literal("")),
+  PROMPTPAY_DISPLAY_NAME: z.string().optional().or(z.literal("")),
+
+  // Static asset paths under /public — drop QR images here
+  LINE_QR_PATH: z.string().default("/assets/line-qr.png"),
+  PROMPTPAY_QR_PATH: z.string().default("/assets/promptpay-qr.png"),
 });
 
 let cachedEnv: z.infer<typeof envSchema> | null = null;

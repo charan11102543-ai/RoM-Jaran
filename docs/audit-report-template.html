@@ -1,0 +1,1072 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Automation Audit Report - [CLINIC_NAME]</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #102326;
+      --muted: #5e7175;
+      --subtle: #edf7f8;
+      --paper: #ffffff;
+      --canvas: #f5fafb;
+      --line: #dbe9eb;
+      --primary: #0891b2;
+      --primary-dark: #0e7490;
+      --primary-soft: #d7f5fa;
+      --success: #16a34a;
+      --success-soft: #dcfce7;
+      --warning: #d97706;
+      --warning-soft: #fef3c7;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --dark: #0f252a;
+      --shadow: 0 18px 50px rgba(15, 37, 42, 0.09);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: "Sarabun", "Noto Sans Thai", sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(8, 145, 178, 0.16), transparent 34rem),
+        linear-gradient(180deg, #f7fdfe 0%, #f4fafb 42%, #ffffff 100%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 40px 0 28px;
+    }
+
+    .report-shell {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(219, 233, 235, 0.92);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.55fr);
+      gap: 28px;
+      padding: 44px;
+      background:
+        linear-gradient(135deg, rgba(8, 145, 178, 0.12), rgba(255, 255, 255, 0.96) 42%),
+        var(--paper);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 14px;
+      color: var(--primary-dark);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--primary);
+      box-shadow: 0 0 0 6px rgba(8, 145, 178, 0.12);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin-bottom: 14px;
+      font-size: clamp(2rem, 5vw, 3.8rem);
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      font-size: clamp(1.42rem, 2vw, 2rem);
+      line-height: 1.24;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      font-size: 1.08rem;
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .meta-card {
+      align-self: stretch;
+      display: grid;
+      gap: 14px;
+      padding: 22px;
+      background: var(--dark);
+      color: #e8fbff;
+      border-radius: 20px;
+      box-shadow: 0 14px 38px rgba(15, 37, 42, 0.2);
+    }
+
+    .meta-row {
+      display: grid;
+      gap: 2px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(232, 251, 255, 0.16);
+    }
+
+    .meta-row:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .meta-label {
+      color: #a8dce5;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .meta-value {
+      font-size: 1rem;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    main {
+      display: grid;
+      gap: 26px;
+      padding: 34px 44px 42px;
+    }
+
+    section {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .section-head p {
+      max-width: 620px;
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .card {
+      page-break-inside: avoid;
+      break-inside: avoid;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 12px 32px rgba(15, 37, 42, 0.06);
+    }
+
+    .summary-card {
+      padding: 26px;
+      border-left: 5px solid var(--primary);
+      background: linear-gradient(135deg, #ffffff, #f3fbfd);
+    }
+
+    .summary-card strong {
+      color: var(--primary-dark);
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .kpi-card {
+      min-height: 148px;
+      padding: 20px;
+      border-radius: 16px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+    }
+
+    .kpi-label {
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .kpi-value {
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-size: 2rem;
+      line-height: 1.1;
+      font-weight: 800;
+    }
+
+    .kpi-note {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .impact-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .pill-primary {
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+    }
+
+    .pill-success {
+      background: var(--success-soft);
+      color: var(--success);
+    }
+
+    .pill-warning {
+      background: var(--warning-soft);
+      color: var(--warning);
+    }
+
+    .pill-danger {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: #ffffff;
+    }
+
+    table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 16px 18px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+    }
+
+    th {
+      background: #f0fafb;
+      color: #31565c;
+      font-size: 0.84rem;
+      font-weight: 800;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    td {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    td strong {
+      color: var(--ink);
+    }
+
+    .badge {
+      display: inline-flex;
+      min-width: 76px;
+      justify-content: center;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .badge-high {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .badge-medium {
+      background: var(--warning-soft);
+      color: var(--warning);
+    }
+
+    .badge-low {
+      background: var(--success-soft);
+      color: var(--success);
+    }
+
+    .leak-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .leak-card {
+      padding: 20px;
+      border-color: #fecaca;
+      background: linear-gradient(180deg, #fff7f7, #ffffff);
+    }
+
+    .leak-value {
+      margin: 8px 0 6px;
+      color: var(--danger);
+      font-size: 1.8rem;
+      line-height: 1.1;
+      font-weight: 800;
+    }
+
+    .revenue-note {
+      margin-top: 16px;
+      padding: 18px 20px;
+      border-radius: 16px;
+      background: #fff8e6;
+      border: 1px solid #fde68a;
+      color: #6f4700;
+    }
+
+    .revenue-note p {
+      margin-bottom: 0;
+    }
+
+    .wins-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .win-item {
+      display: grid;
+      grid-template-columns: 1fr 1.35fr 0.8fr 0.75fr;
+      gap: 14px;
+      padding: 18px;
+      align-items: start;
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--primary-dark);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .field-text {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.5;
+    }
+
+    .package-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .package {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding: 26px;
+    }
+
+    .package.featured {
+      border: 2px solid var(--primary);
+      box-shadow: 0 18px 42px rgba(8, 145, 178, 0.16);
+    }
+
+    .starter-ribbon {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .price {
+      margin: 10px 0 16px;
+      font-size: 2.2rem;
+      line-height: 1.08;
+      font-weight: 800;
+    }
+
+    .price small {
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .feature-list {
+      display: grid;
+      gap: 9px;
+      margin: 0 0 18px;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+    }
+
+    .feature-list li {
+      position: relative;
+      padding-left: 22px;
+    }
+
+    .feature-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.68em;
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--success);
+    }
+
+    .upsell-note {
+      margin-top: auto;
+      padding: 13px 14px;
+      border-radius: 14px;
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      font-weight: 800;
+    }
+
+    .cta {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: center;
+      padding: 34px;
+      background:
+        linear-gradient(135deg, rgba(8, 145, 178, 0.22), transparent 52%),
+        var(--dark);
+      color: #ffffff;
+      border-radius: 24px;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .cta h2 {
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+
+    .cta p {
+      max-width: 700px;
+      margin-bottom: 0;
+      color: #bfe7ee;
+    }
+
+    .cta-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-weight: 800;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .button-primary {
+      background: #22d3ee;
+      color: #07262c;
+      box-shadow: 0 12px 28px rgba(34, 211, 238, 0.22);
+    }
+
+    .button-secondary {
+      background: transparent;
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.32);
+    }
+
+    .footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 22px 44px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      border-top: 1px solid var(--line);
+      background: #fbfeff;
+    }
+
+    .footer strong {
+      color: var(--ink);
+    }
+
+    @media (max-width: 880px) {
+      .hero,
+      .cta {
+        grid-template-columns: 1fr;
+      }
+
+      .kpi-grid,
+      .leak-grid,
+      .package-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .win-item {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .cta-actions {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .page {
+        width: min(100% - 20px, 1120px);
+        padding: 10px 0;
+      }
+
+      .report-shell {
+        border-radius: 18px;
+      }
+
+      .hero,
+      main,
+      .footer {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .hero {
+        padding-top: 28px;
+        padding-bottom: 28px;
+      }
+
+      main {
+        padding-top: 24px;
+        padding-bottom: 28px;
+      }
+
+      .section-head {
+        display: block;
+      }
+
+      .win-item {
+        grid-template-columns: 1fr;
+      }
+
+      .cta {
+        padding: 24px;
+      }
+
+      .button {
+        width: 100%;
+      }
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 14mm;
+    }
+
+    @media print {
+      :root {
+        --shadow: none;
+      }
+
+      html,
+      body {
+        width: 210mm;
+        background: #ffffff;
+      }
+
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .page {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      .report-shell {
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        overflow: visible;
+      }
+
+      .hero,
+      main,
+      .footer {
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      .hero {
+        grid-template-columns: 1.35fr 0.65fr;
+        padding-top: 0;
+      }
+
+      main {
+        gap: 18px;
+        padding-top: 18px;
+        padding-bottom: 18px;
+      }
+
+      section,
+      .card,
+      .summary-card,
+      .kpi-card,
+      .leak-card,
+      .win-item,
+      .package,
+      .cta,
+      table,
+      tr {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      .kpi-grid,
+      .leak-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .package-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .win-item {
+        grid-template-columns: 1fr 1.35fr 0.8fr 0.75fr;
+      }
+
+      .table-wrap {
+        overflow: visible;
+      }
+
+      table {
+        min-width: 0;
+      }
+
+      th,
+      td {
+        padding: 10px 12px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      .kpi-value,
+      .leak-value,
+      .price {
+        font-size: 26px;
+      }
+
+      .button {
+        border: 1px solid currentColor;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <article class="report-shell" aria-label="AI Automation Audit Report">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">AI Automation Audit Report</p>
+          <h1>รายงานตรวจสอบระบบกู้คืนลีดและ LINE OA Automation สำหรับ [CLINIC_NAME]</h1>
+          <p class="lead">
+            จัดทำเพื่อประเมินจุดรั่วของลีด ความเร็วในการตอบกลับ และโอกาสเพิ่มรายได้จากคนไข้ที่สนใจทำฟันแต่ยังไม่ถูกติดตามอย่างเป็นระบบ
+          </p>
+        </div>
+        <aside class="meta-card" aria-label="Report information">
+          <div class="meta-row">
+            <span class="meta-label">จัดทำโดย</span>
+            <span class="meta-value">[AGENCY_NAME]</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">ผู้ตรวจสอบ</span>
+            <span class="meta-value">[AUDITOR_NAME]</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">วันที่</span>
+            <span class="meta-value">[YYYY-MM-DD]</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">ติดต่อ</span>
+            <span class="meta-value">[CONTACT_EMAIL] · [CONTACT_PHONE]</span>
+          </div>
+        </aside>
+      </header>
+
+      <main>
+        <section id="executive-summary" aria-labelledby="executive-summary-title">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Section 1</p>
+              <h2 id="executive-summary-title">Executive Summary</h2>
+            </div>
+            <p>สรุปภาพรวมภายใน 30 วินาที: คลินิกมีโอกาสเพิ่มรายได้จากการลดเวลาตอบกลับและปิดช่องว่างระหว่างคนไข้ทักมา สนใจจริง และนัดหมายสำเร็จ</p>
+          </div>
+          <div class="card summary-card">
+            <h3>30-second summary</h3>
+            <p>
+              จากข้อมูลเบื้องต้น [CLINIC_NAME] ได้รับลีดประมาณ <strong>[N] รายต่อเดือน</strong> แต่เวลาตอบกลับเฉลี่ยอยู่ที่ <strong>[T]</strong>
+              และมีสัญญาณลีดหลุดประมาณ <strong>[L] รายต่อเดือน</strong> หากวางระบบ LINE OA automation พร้อมขั้นตอนติดตามซ้ำ จะช่วยลดการพลาดเคสใหญ่และทำให้ทีมแอดมินปิดนัดได้เร็วขึ้น
+            </p>
+            <div class="kpi-grid" aria-label="Key performance indicators">
+              <div class="kpi-card">
+                <div class="kpi-label">Leads / Month</div>
+                <div class="kpi-value">[N]</div>
+                <p class="kpi-note">จำนวนผู้สนใจที่เข้ามาจากโฆษณา เพจ เว็บไซต์ และ LINE OA</p>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Average Response Time</div>
+                <div class="kpi-value">[T]</div>
+                <p class="kpi-note">ยิ่งตอบช้า โอกาสที่คนไข้จะไปคลินิกคู่แข่งยิ่งสูงขึ้น</p>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Estimated Lead Leakage</div>
+                <div class="kpi-value">[L]</div>
+                <p class="kpi-note">ลีดที่ไม่ได้รับการติดตามต่อจนถึงขั้นตอนจองนัด</p>
+              </div>
+            </div>
+            <div class="impact-strip" aria-label="Business impact highlights">
+              <span class="pill pill-danger">รายได้รั่วไหลประมาณ [LOSS_THB] บาท</span>
+              <span class="pill pill-warning">ลีดคุณภาพสูงหายไป [X]%</span>
+              <span class="pill pill-primary">ลดงานแอดมินซ้ำซ้อนด้วย Automation</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="current-funnel-audit" aria-labelledby="current-funnel-audit-title">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Section 2</p>
+              <h2 id="current-funnel-audit-title">Current Funnel Audit</h2>
+            </div>
+            <p>ตรวจสอบ 5 ขั้นตอนหลักของฟันเนล ตั้งแต่ลีดเริ่มสนใจจนถึงการจองนัดและติดตามหลังสนทนา</p>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Stage</th>
+                  <th>Current Status</th>
+                  <th>Issue</th>
+                  <th>Severity</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>1. Lead Capture</strong></td>
+                  <td>ลีดเข้าจากหลายช่องทาง แต่ยังรวมข้อมูลไม่ครบ</td>
+                  <td>ทีมมองไม่เห็นภาพรวมว่าแต่ละช่องทางสร้างเคสคุณภาพเท่าไร</td>
+                  <td><span class="badge badge-medium">Medium</span></td>
+                </tr>
+                <tr>
+                  <td><strong>2. First Response</strong></td>
+                  <td>ตอบกลับเฉลี่ย [T] หลังจากคนไข้ทักมา</td>
+                  <td>ลีดร้อนที่สนใจจัดฟันหรือรากเทียมอาจเปรียบเทียบกับคลินิกอื่นแล้วตัดสินใจก่อน</td>
+                  <td><span class="badge badge-high">High</span></td>
+                </tr>
+                <tr>
+                  <td><strong>3. Qualification</strong></td>
+                  <td>ยังไม่มีคำถามคัดกรองแบบมาตรฐาน</td>
+                  <td>แอดมินใช้เวลาถามซ้ำ และแยกเคสเร่งด่วนออกจากเคสทั่วไปได้ช้า</td>
+                  <td><span class="badge badge-medium">Medium</span></td>
+                </tr>
+                <tr>
+                  <td><strong>4. Appointment Booking</strong></td>
+                  <td>จองนัดผ่านแชตเป็นหลัก</td>
+                  <td>ไม่มีตัวกระตุ้นให้คนไข้เลือกวันเวลาทันทีเมื่อกำลังสนใจสูงสุด</td>
+                  <td><span class="badge badge-high">High</span></td>
+                </tr>
+                <tr>
+                  <td><strong>5. Follow-up</strong></td>
+                  <td>ติดตามซ้ำด้วยมือและขึ้นกับเวลาว่างของทีม</td>
+                  <td>ลีดที่ยังไม่พร้อมวันนี้ไม่มี workflow ดึงกลับมาปิดนัดใน 3-7 วัน</td>
+                  <td><span class="badge badge-low">Low</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="lead-leak-points" aria-labelledby="lead-leak-points-title">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Section 3</p>
+              <h2 id="lead-leak-points-title">Lead Leak Points</h2>
+            </div>
+            <p>จุดรั่วที่กระทบรายได้มากที่สุดมักไม่ได้อยู่ที่จำนวนลีด แต่อยู่ที่ความเร็ว การคัดกรอง และการติดตามหลังคนไข้เงียบ</p>
+          </div>
+          <div class="leak-grid">
+            <div class="card leak-card">
+              <span class="pill pill-danger">Danger</span>
+              <div class="leak-value">[X]%</div>
+              <h3>ตอบกลับช้าเกินช่วงตัดสินใจ</h3>
+              <p class="field-text">ลีดที่ต้องการรากเทียมมักมีมูลค่าสูง หากตอบช้าเพียงไม่กี่ชั่วโมง อาจเสียเคสหลักหมื่นถึงหลักแสนบาท</p>
+            </div>
+            <div class="card leak-card">
+              <span class="pill pill-warning">Warning</span>
+              <div class="leak-value">[Y]%</div>
+              <h3>ไม่มีการคัดกรองอัตโนมัติ</h3>
+              <p class="field-text">เคสจัดฟันต้องถามงบประมาณ อายุ ปัญหาฟัน และช่วงเวลาสะดวก การไม่มี flow ทำให้แอดมินเสียเวลาซ้ำ</p>
+            </div>
+            <div class="card leak-card">
+              <span class="pill pill-danger">Revenue Risk</span>
+              <div class="leak-value">[LOSS_THB]</div>
+              <h3>รายได้ที่อาจรั่วไหลต่อเดือน</h3>
+              <p class="field-text">ประเมินจากจำนวนลีดหลุด [L] ราย มูลค่าเคสเฉลี่ย และโอกาสปิดการรักษาในบริการหลัก</p>
+            </div>
+          </div>
+          <div class="revenue-note">
+            <p>
+              ตัวอย่างผลกระทบ: หากลีดรากเทียม [A] รายและลีดจัดฟัน [B] รายหลุดจากการติดตาม โดยมีมูลค่าเฉลี่ยต่อเคส [C] บาท
+              คลินิกอาจเสียโอกาสรายได้รวมประมาณ <strong>[LOSS_THB] บาทต่อเดือน</strong> แม้กู้คืนได้เพียงบางส่วนก็เพียงพอให้ระบบ Automation คืนทุนเร็ว
+            </p>
+          </div>
+        </section>
+
+        <section id="quick-wins" aria-labelledby="quick-wins-title">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Section 4</p>
+              <h2 id="quick-wins-title">Quick Wins</h2>
+            </div>
+            <p>3 สิ่งที่เริ่มได้ภายใน 7 วัน เพื่อให้ทีมเห็นผลเร็วโดยไม่ต้องเปลี่ยนระบบทั้งหมดในครั้งเดียว</p>
+          </div>
+          <div class="wins-grid">
+            <div class="card win-item">
+              <div>
+                <span class="field-label">Issue</span>
+                <p class="field-text">ลีดใหม่ไม่ได้รับคำตอบทันทีหลังทัก LINE</p>
+              </div>
+              <div>
+                <span class="field-label">Recommended Action</span>
+                <p class="field-text">ตั้งข้อความต้อนรับพร้อมปุ่มเลือกบริการ เช่น รากเทียม จัดฟัน ฟอกสีฟัน และส่งต่อคำถามคัดกรองอัตโนมัติ</p>
+              </div>
+              <div>
+                <span class="field-label">Estimated Impact</span>
+                <p class="field-text">ลดเวลาตอบกลับแรกเหลือภายใน [Z]</p>
+              </div>
+              <div>
+                <span class="field-label">Timeline</span>
+                <p class="field-text">1-2 วัน</p>
+              </div>
+            </div>
+            <div class="card win-item">
+              <div>
+                <span class="field-label">Issue</span>
+                <p class="field-text">แอดมินต้องถามข้อมูลซ้ำทุกเคส</p>
+              </div>
+              <div>
+                <span class="field-label">Recommended Action</span>
+                <p class="field-text">สร้างแบบฟอร์ม intake สั้นผ่าน [INTAKE_URL] เพื่อเก็บอาการ งบประมาณ ช่วงเวลาสะดวก และช่องทางติดต่อ</p>
+              </div>
+              <div>
+                <span class="field-label">Estimated Impact</span>
+                <p class="field-text">เพิ่มคุณภาพข้อมูลก่อนจองนัด [Y]%</p>
+              </div>
+              <div>
+                <span class="field-label">Timeline</span>
+                <p class="field-text">2-3 วัน</p>
+              </div>
+            </div>
+            <div class="card win-item">
+              <div>
+                <span class="field-label">Issue</span>
+                <p class="field-text">ลีดเงียบแล้วไม่มีการติดตามแบบเป็นระบบ</p>
+              </div>
+              <div>
+                <span class="field-label">Recommended Action</span>
+                <p class="field-text">วาง follow-up sequence 3 ครั้งใน 7 วัน พร้อมข้อความให้ความรู้และ CTA จองปรึกษา</p>
+              </div>
+              <div>
+                <span class="field-label">Estimated Impact</span>
+                <p class="field-text">กู้คืนลีดที่กำลังเปรียบเทียบคลินิกได้ [X]%</p>
+              </div>
+              <div>
+                <span class="field-label">Timeline</span>
+                <p class="field-text">3-7 วัน</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="recommended-setup" aria-labelledby="recommended-setup-title">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Section 5</p>
+              <h2 id="recommended-setup-title">Recommended Setup</h2>
+            </div>
+            <p>เริ่มจากระบบที่เล็กพอให้เห็นผลเร็ว แล้วขยายเป็น Core Setup เมื่อคลินิกต้องการเชื่อมข้อมูลและ workflow เพิ่ม</p>
+          </div>
+          <div class="package-grid">
+            <div class="card package featured">
+              <span class="pill starter-ribbon">เริ่มที่นี่</span>
+              <h3>Entry Offer</h3>
+              <div class="price">4,900 <small>บาท</small></div>
+              <ul class="feature-list">
+                <li>Audit funnel และระบุจุดรั่วหลักของลีด</li>
+                <li>ตั้งค่า LINE OA greeting และเมนูเริ่มต้น</li>
+                <li>สร้าง intake flow สำหรับคัดกรองเคส dental procedure</li>
+                <li>ทำ follow-up sequence 7 วันสำหรับลีดที่ยังไม่จองนัด</li>
+              </ul>
+              <div class="upsell-note">Entry credit ใช้ได้เต็มจำนวนถ้าอัปเกรดภายใน 30 วัน</div>
+            </div>
+            <div class="card package">
+              <h3>Core Setup</h3>
+              <div class="price">[DEAL] <small>บาท</small></div>
+              <ul class="feature-list">
+                <li>ออกแบบ lead recovery system ครบ funnel</li>
+                <li>เชื่อมฟอร์ม intake, LINE OA, sheet หรือ CRM ที่คลินิกใช้</li>
+                <li>แยก workflow สำหรับรากเทียม จัดฟัน และบริการมูลค่าสูง</li>
+                <li>Dashboard ติดตามลีด นัดหมาย และมูลค่ารายได้ที่กู้คืนได้</li>
+                <li>ปรับข้อความและ automation ตาม feedback หลังใช้งานจริง</li>
+              </ul>
+              <div class="upsell-note">เหมาะกับคลินิกที่มีลีดสม่ำเสมอและต้องการลดงานแอดมินระยะยาว</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="next-step" aria-labelledby="next-step-title">
+          <div class="cta">
+            <div>
+              <p class="eyebrow">Section 6</p>
+              <h2 id="next-step-title">Next Step CTA</h2>
+              <p>
+                ขั้นตอนถัดไปคือเริ่ม Entry เพื่อปิดจุดรั่วที่ชัดที่สุดก่อน จากนั้นใช้ข้อมูลจริงตัดสินใจว่าจะขยายเป็นระบบ Core Setup หรือไม่
+              </p>
+            </div>
+            <div class="cta-actions" aria-label="Next step actions">
+              <a class="button button-primary" href="[INTAKE_URL]">เริ่ม Entry 4,900</a>
+              <a class="button button-secondary" href="[LINE_OA_URL]">ปรึกษาก่อนใน LINE</a>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span><strong>Confidential — for [CLINIC_NAME] only</strong></span>
+        <span>[AGENCY_NAME] · [CONTACT_EMAIL] · [CONTACT_PHONE] · [LINE_OA_ID]</span>
+      </footer>
+    </article>
+  </div>
+
+  <!--
+    Sample placeholder values:
+    [AGENCY_NAME] = Apex Dental Automation
+    [CONTACT_EMAIL] = hello@example-agency.com
+    [CONTACT_PHONE] = 02-123-4567
+    [LINE_OA_ID] = @apexauto
+    [LINE_OA_URL] = https://lin.ee/example
+    [INTAKE_URL] = https://example.com/dental-intake
+    [CLINIC_NAME] = Smile Plus Dental Clinic
+    [AUDITOR_NAME] = คุณนภัส
+    [YYYY-MM-DD] = 2026-05-18
+    [N] = 120
+    [T] = 3 ชั่วโมง 20 นาที
+    [L] = 36
+    [X]% = 30%
+    [Y]% = 22%
+    [A] = 8
+    [B] = 14
+    [C] = 45,000
+    [Z] = 5 นาที
+    [DEAL] = 29,000
+    [LOSS_THB] = 380,000
+
+    PDF export instructions:
+    1. Open this HTML file in Google Chrome.
+    2. Press Ctrl+P or Cmd+P.
+    3. Choose "Save to PDF".
+    4. Set paper size to A4, orientation to Portrait, margins to Default or Custom 14 mm.
+    5. Enable "Background graphics" for accurate colors.
+    6. Save the exported file using the clinic name and audit date.
+
+    Example dental clinic scenario:
+    Smile Plus Dental Clinic receives around 120 monthly leads from Facebook Ads and LINE OA.
+    The clinic offers implants, braces, whitening, and general dentistry.
+    Their team replies manually during business hours, so evening leads often wait until the next day.
+    The largest leakage comes from implant and braces inquiries that ask for price, receive a delayed answer, and never get a structured follow-up.
+    The Entry Offer sets up instant LINE OA response, intake questions, and a 7-day lead recovery flow before moving to a full Core Setup.
+  -->
+</body>
+</html>

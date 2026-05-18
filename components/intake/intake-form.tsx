@@ -6,17 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-const PACKAGES = [
-  { value: "starter", label: "Starter — 6,000 บาท/เดือน" },
-  { value: "growth", label: "Growth — 9,500 บาท/เดือน" },
-  { value: "scale", label: "Scale — 15,000 บาท/เดือน" },
-  { value: "unsure", label: "ยังไม่แน่ใจ — ขอให้แนะนำ" },
-] as const;
+// Heuristic: pure digits/space/dash/+/() = phone; otherwise treat as LINE ID
+function looksLikePhone(value: string): boolean {
+  return /^[\d\s\-+()]{8,}$/.test(value.trim());
+}
 
 export function IntakeForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialPackage = searchParams.get("package") ?? "unsure";
+  const pkgFromUrl = searchParams.get("package") ?? "unsure";
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,14 +25,22 @@ export function IntakeForm() {
     setSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
+    const clinic = String(formData.get("clinic") ?? "").trim();
+    const contact = String(formData.get("contact") ?? "").trim();
+    const message = String(formData.get("message") ?? "").trim();
+    const isPhone = looksLikePhone(contact);
+
+    // Map shrunk 3-field form to existing /api/intake payload (which requires
+    // name + phone). Clinic doubles as "name"; contact fills phone and lineId
+    // depending on its shape — admin sees the same value in both fields.
     const payload = {
-      name: String(formData.get("name") ?? ""),
-      clinic: String(formData.get("clinic") ?? ""),
-      phone: String(formData.get("phone") ?? ""),
-      email: String(formData.get("email") ?? ""),
-      lineId: String(formData.get("lineId") ?? ""),
-      packageInterest: String(formData.get("packageInterest") ?? "unsure"),
-      message: String(formData.get("message") ?? ""),
+      name: clinic,
+      clinic,
+      phone: isPhone ? contact : contact,
+      lineId: isPhone ? "" : contact,
+      email: "",
+      packageInterest: pkgFromUrl,
+      message,
     };
 
     try {
@@ -58,48 +64,43 @@ export function IntakeForm() {
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-5">
-      <Field label="ชื่อ-นามสกุล *" htmlFor="name">
-        <Input id="name" name="name" required maxLength={120} placeholder="ชื่อจริง นามสกุล" />
-      </Field>
-
       <Field label="ชื่อคลินิก / ธุรกิจ *" htmlFor="clinic">
-        <Input id="clinic" name="clinic" required maxLength={200} placeholder="เช่น เดนทัล แคร์ คลินิก" />
+        <Input
+          id="clinic"
+          name="clinic"
+          required
+          maxLength={200}
+          placeholder="เช่น เดนทัล แคร์ คลินิก สาขาอโศก"
+        />
       </Field>
 
-      <div className="grid gap-5 md:grid-cols-2">
-        <Field label="เบอร์โทร *" htmlFor="phone">
-          <Input id="phone" name="phone" required type="tel" maxLength={40} placeholder="08x-xxx-xxxx" />
-        </Field>
-
-        <Field label="LINE ID" htmlFor="lineId">
-          <Input id="lineId" name="lineId" maxLength={100} placeholder="@yourline" />
-        </Field>
-      </div>
-
-      <Field label="อีเมล (ถ้ามี)" htmlFor="email">
-        <Input id="email" name="email" type="email" placeholder="you@clinic.com" />
+      <Field
+        label="LINE OA หรือเบอร์โทร *"
+        htmlFor="contact"
+        hint="ใส่อย่างใดอย่างหนึ่ง — เราจะติดต่อกลับช่องทางนี้"
+      >
+        <Input
+          id="contact"
+          name="contact"
+          required
+          minLength={8}
+          maxLength={100}
+          placeholder="@yourline หรือ 08x-xxx-xxxx"
+        />
       </Field>
 
-      <Field label="แพ็กเกจที่สนใจ" htmlFor="packageInterest">
-        <select
-          id="packageInterest"
-          name="packageInterest"
-          defaultValue={initialPackage}
-          className="flex h-11 w-full rounded-2xl border border-[var(--border)] bg-white px-4 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
-        >
-          {PACKAGES.map((p) => (
-            <option key={p.value} value={p.value}>{p.label}</option>
-          ))}
-        </select>
-      </Field>
-
-      <Field label="บอกเราเล็กน้อยเกี่ยวกับคลินิกของคุณ" htmlFor="message">
+      <Field
+        label="ปัญหาหลัก / สิ่งที่อยากให้ช่วย *"
+        htmlFor="message"
+        hint="ยิ่งบอกละเอียด รายงาน Audit ฟรีจะยิ่งตรงจุด"
+      >
         <Textarea
           id="message"
           name="message"
+          required
           maxLength={2000}
-          rows={5}
-          placeholder="ปัจจุบันรับ lead จากช่องทางไหนบ้าง, ปัญหาที่อยากแก้, ปริมาณ lead/สัปดาห์..."
+          rows={4}
+          placeholder="เช่น lead จาก LINE หล่นกลางคืน, ลูกค้าถามราคาแล้วเงียบ, จองคิวซ้ำซ้อน..."
         />
       </Field>
 
@@ -108,11 +109,11 @@ export function IntakeForm() {
       )}
 
       <Button type="submit" size="lg" disabled={submitting}>
-        {submitting ? "กำลังส่ง..." : "ส่งคำขอ — ทีมจะติดต่อกลับภายใน 1 วันทำการ"}
+        {submitting ? "กำลังส่ง..." : "ขอ Audit Report ฟรี →"}
       </Button>
 
       <p className="text-xs text-[var(--muted-foreground)]">
-        การส่งฟอร์มถือว่ายินยอมให้เราติดต่อกลับเพื่อให้คำปรึกษา ไม่มีค่าใช้จ่ายและไม่ผูกมัด
+        ใช้เวลา 30 วินาที · ส่งรายงาน PDF ภายใน 24 ชม. · ไม่มีค่าใช้จ่าย ไม่ผูกมัด
       </p>
     </form>
   );
@@ -121,16 +122,19 @@ export function IntakeForm() {
 function Field({
   label,
   htmlFor,
+  hint,
   children,
 }: {
   label: string;
   htmlFor: string;
+  hint?: string;
   children: React.ReactNode;
 }) {
   return (
     <label htmlFor={htmlFor} className="grid gap-2">
       <span className="text-sm font-medium text-[var(--foreground)]">{label}</span>
       {children}
+      {hint && <span className="text-xs text-[var(--muted-foreground)]">{hint}</span>}
     </label>
   );
 }

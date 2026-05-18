@@ -42,9 +42,9 @@ const FEATURES = [
 ];
 
 const HOW_IT_WORKS = [
-  { step: "1", title: "นัด Demo", body: "กรอกฟอร์ม 1 นาที ทีมเราติดต่อกลับใน 1 วันทำการ" },
-  { step: "2", title: "ตั้งระบบ 1 วัน", body: "เราติดตั้ง + train ทีมแอดมินคลินิกคุณ ครบ end-to-end" },
-  { step: "3", title: "Go live + วัดผล", body: "ระบบทำงาน 24/7 พร้อมรายงาน KPI รายสัปดาห์" },
+  { step: "1", title: "ขอ Audit Report ฟรี", body: "กรอกฟอร์ม 1 นาที — ส่งรายงานวิเคราะห์ LINE OA + จุดที่ lead ตกหล่นใน 24 ชม." },
+  { step: "2", title: "ตั้งระบบใน 1-3 วัน", body: "เริ่มที่ Entry 4,900 บาท หรือเข้า Core Setup 15,000 ครบ end-to-end" },
+  { step: "3", title: "Go live + วัดผล", body: "ระบบทำงาน 24/7 พร้อมรายงาน KPI รายสัปดาห์ ติดตามผลร่วมกัน" },
 ];
 
 export default function Home() {
@@ -57,12 +57,13 @@ export default function Home() {
           <Brand />
           <nav className="flex flex-wrap items-center gap-3">
             <Link href="/pricing" className="text-sm font-medium hover:text-[var(--accent)]">แพ็กเกจ</Link>
+            <Link href="/case-study" className="text-sm font-medium hover:text-[var(--accent)]">Case Study</Link>
             <Link href="/chat" className="text-sm font-medium hover:text-[var(--accent)]">ทดลอง Chat</Link>
             <Link href="/login" className={buttonVariants({ variant: "outline", size: "sm" })}>
               Admin Login
             </Link>
             <Link href="/intake" className={buttonVariants({ size: "sm" })}>
-              นัด Demo
+              ขอ Audit ฟรี
             </Link>
           </nav>
         </header>
@@ -80,16 +81,22 @@ export default function Home() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/intake" className={buttonVariants({ size: "lg" })}>
                 <span className="inline-flex items-center gap-2">
-                  นัด Demo ฟรี <ArrowRight className="h-4 w-4" />
+                  ขอ Audit Report ฟรี <ArrowRight className="h-4 w-4" />
                 </span>
               </Link>
               <Link href="/pricing" className={buttonVariants({ size: "lg", variant: "outline" })}>
                 ดูแพ็กเกจ
               </Link>
+              <Link href="/case-study" className={buttonVariants({ size: "lg", variant: "ghost" })}>
+                ดูตัวอย่างผลลัพธ์
+              </Link>
               <Link href="/chat" className={buttonVariants({ size: "lg", variant: "ghost" })}>
                 ลองคุยกับ AI
               </Link>
             </div>
+            <p className="mt-3 text-xs text-[var(--muted-foreground)]">
+              ส่งรายงาน PDF ภายใน 24 ชม. — ตรวจ LINE OA + flow lead ปัจจุบัน ไม่มีค่าใช้จ่าย ไม่ผูกมัด
+            </p>
 
             <div className="mt-10 grid gap-4 sm:grid-cols-3">
               {OUTCOMES.map((o) => (
@@ -114,7 +121,7 @@ export default function Home() {
               ))}
             </ul>
             <Link href="/intake" className={buttonVariants({ variant: "outline", className: "mt-6 w-full !bg-white !text-[var(--foreground)] hover:!bg-white/90" })}>
-              ขอคำปรึกษาฟรี
+              ขอ Audit Report ฟรี
             </Link>
           </Card>
         </section>
@@ -155,15 +162,21 @@ export default function Home() {
           <div className="grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-center">
             <div>
               <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
-                พร้อมให้คลินิกของคุณรับ lead ตลอด 24 ชั่วโมงหรือยัง?
+                ขอ Audit Report ฟรี — ดูว่าคลินิกของคุณ &ldquo;หล่น&rdquo; lead กี่รายต่อสัปดาห์
               </h2>
               <p className="mt-4 text-white/70">
-                ปรึกษาฟรี 20 นาที — เราจะวิเคราะห์ flow ปัจจุบันและแนะนำว่าคุ้มที่จะลงระบบนี้หรือไม่
+                เราตรวจ LINE OA + flow ปัจจุบันของคุณ ส่งรายงาน PDF ภายใน 24 ชม. — ฟรี ไม่มีค่าใช้จ่าย ไม่ผูกมัด
               </p>
             </div>
             <div className="flex flex-col gap-3">
               <Link href="/intake" className={buttonVariants({ size: "lg", className: "!bg-white !text-[var(--foreground)] hover:!bg-white/90" })}>
-                นัด Demo ฟรี
+                ขอ Audit Report ฟรี
+              </Link>
+              <Link
+                href="/case-study"
+                className={buttonVariants({ variant: "outline", size: "lg", className: "!border-white/30 !bg-transparent !text-white hover:!bg-white/10" })}
+              >
+                Case Study
               </Link>
               {env.BUSINESS_LINE_OA_URL && (
                 <Link
@@ -185,7 +198,8 @@ export default function Home() {
           <p>© {new Date().getFullYear()} {env.BUSINESS_NAME}</p>
           <div className="flex gap-4">
             <Link href="/pricing" className="hover:text-[var(--accent)]">แพ็กเกจ</Link>
-            <Link href="/intake" className="hover:text-[var(--accent)]">นัด Demo</Link>
+            <Link href="/case-study" className="hover:text-[var(--accent)]">Case Study</Link>
+            <Link href="/intake" className="hover:text-[var(--accent)]">ขอ Audit ฟรี</Link>
             <Link href="/chat" className="hover:text-[var(--accent)]">ทดลอง Chat</Link>
             {env.BUSINESS_CONTACT_EMAIL && (
               <a href={`mailto:${env.BUSINESS_CONTACT_EMAIL}`} className="hover:text-[var(--accent)]">
