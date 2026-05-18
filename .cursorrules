@@ -1,0 +1,155 @@
+# Cursor Rules — ai-automation-hustle
+
+> **Read this first.** Then if you need more, see `CLAUDE.md`, `SYSTEM_BLUEPRINT_PHASE1.md`, and `docs/CLIENT_DEPLOYMENT.md`.
+
+---
+
+## 1. What this project is
+
+**Repo name:** `ai-automation-hustle` (GitHub: `charan11102543-ai/RoM-Jaran`)
+**Owner:** Solo operator in Thailand (Charan)
+**Business model:** **Agency** — Setup 15,000 THB + Retainer 6,000–15,000 THB/month
+**Target niche:** Thai dental clinics in Bangkok (1–3 branches)
+**Product:** AI-powered LINE OA + web lead capture / qualification / booking for clinics
+**Tech:** Next.js 16 (App Router, Turbopack), Prisma 7 + PostgreSQL, NextAuth (credentials), OpenAI, pnpm
+
+This is **NOT a SaaS** to sell self-serve. Each client gets their own deployed instance. The codebase is the agency's **delivery asset**, not the product itself.
+
+---
+
+## 2. Where we are right now
+
+**Shipped (on `main`):**
+- Phase 1: Lead/Booking MVP (chat → qualify → book + n8n webhook)
+- Phase 2: Agent Command Center (Kanban + agent registry + spaces — internal ops)
+- Phase 3: Sales surface (Thai landing, `/pricing`, `/intake`, `/intake/thanks`, admin notify)
+- Phase 3+: ROI calculator, LINE/PromptPay QR sections, audit-report HTML template
+
+**In progress / open branches:**
+- `codex/pr3-prisma-ci-fix` — CI fix for Prisma 7 type compatibility
+- (Check `git branch -a` for latest)
+
+**Next planned (do NOT start without explicit ask):**
+- `docs/OUTREACH_PLAYBOOK.md` — 50 dental clinic outreach scripts
+- LINE Messaging API webhook integration (Phase 4, after first paid client)
+- Stripe SDK / Customer model (Phase 4)
+
+---
+
+## 3. Money-first triage (apply to every change)
+
+Before writing code, ask: **does this help close the next deal?**
+
+- ✅ Landing copy, CTA, intake friction, audit deliverable, payment QR, outreach assets → DO
+- 🟡 KPI reports, dashboards for clients, simple admin polish → DO IF asked
+- ❌ Multi-tenant refactor, full Stripe SDK, FB Messenger, Sentry, perfect tests → SKIP / DEFER
+
+If a change doesn't tie to revenue, conversion, or delivery — flag it before doing it.
+
+---
+
+## 4. Critical conventions
+
+**File operations**
+- One focused change per turn. **Don't batch unrelated edits.** Stop and report after each file.
+- Prefer `Edit` over `Write` for existing files (minimal diff).
+- **Never** create README/MD docs unless explicitly asked.
+- **Never** add comments explaining "what" — only "why" when non-obvious.
+
+**Stack quirks**
+- Next.js 16: uses `proxy.ts` (NOT `middleware.ts`) — they conflict.
+- Prisma 7: requires `@prisma/adapter-pg` for connection. `lib/db.ts` already wraps this.
+- Zod v4: `z.record(keySchema, valueSchema)` — both args required.
+- Prisma JSON inputs: cast to `Prisma.*UncheckedCreateInput` to bypass strict typing.
+- `server-only` import in tests: mock with `vi.mock("server-only", () => ({}))`.
+
+**Env**
+- Validated in `lib/env.ts` (zod). All new vars MUST go through schema.
+- Production-ready vars use `.optional()` so missing values don't break dev/CI.
+- `.env` is gitignored; `.env.example` is the source of truth for docs.
+
+**Auth**
+- Single admin via NextAuth credentials. No OAuth, no multi-user yet.
+- Admin pages: `requireAdminPageSession()`. Admin APIs: `requireAdminApiSession()` returns 401 JSON.
+
+---
+
+## 5. Common commands
+
+```bash
+# Dev (Node.js path on this machine — Cursor's bundled node)
+$env:Path = "C:\Users\chara\AppData\Local\Programs\cursor\resources\app\resources\helpers;$env:LOCALAPPDATA\pnpm;$env:Path"
+pnpm dev                          # http://localhost:3000
+
+# Database (Docker Desktop must be running)
+docker compose up -d postgres
+pnpm exec prisma migrate deploy
+pnpm db:seed                      # creates admin + 5 agents + 3 spaces + demo tasks
+
+# Quality
+pnpm lint
+pnpm test                         # vitest run (62+ tests)
+pnpm exec next build --webpack    # full type check + production build
+
+# Git
+git status -s
+git log --oneline -10
+```
+
+**Admin login (dev):** `admin@example.com` / `ChangeMe123!`
+
+---
+
+## 6. Map of source-of-truth files
+
+| Need to know about | Look at |
+|---|---|
+| Why this project exists, full vision | `CLAUDE.md` |
+| Business blueprint, packages, schemas, deploy plan | `SYSTEM_BLUEPRINT_PHASE1.md` |
+| How to deploy a new client | `docs/CLIENT_DEPLOYMENT.md` |
+| Free deliverable for Entry Offer | `docs/audit-report-template.html` |
+| Data model | `prisma/schema.prisma` |
+| Env vars (all) | `lib/env.ts` |
+| Sales landing page | `app/page.tsx` |
+| Pricing (3 packages + ROI calc) | `app/pricing/page.tsx` + `components/pricing/roi-calculator.tsx` |
+| Agency intake form | `app/intake/page.tsx` + `components/intake/intake-form.tsx` |
+| Admin notification system | `lib/notifications.ts` |
+| Auth | `lib/auth.ts` |
+
+---
+
+## 7. Offer stack (memorize — used in landing/pricing/audit/outreach)
+
+| Tier | Price | Deliverable |
+|---|---|---|
+| **Entry** | 4,900 THB one-time | LINE Audit + AI auto-reply + Google Sheet lead capture (3 days) |
+| **Core Setup** | 15,000 THB one-time | Full system install + train + go-live (1–3 days) |
+| **Starter** | 6,000 THB/mo | 1 channel + weekly report |
+| **Growth** ⭐ | 9,500 THB/mo | Multi-channel + email + SLA alert + content |
+| **Scale** | 15,000 THB/mo | Everything + advanced scoring + monthly review |
+
+Entry credit applies to Core Setup if upgraded within 30 days.
+
+---
+
+## 8. When user asks for "next step"
+
+Default sequence (don't deviate without checking):
+1. Finish whatever file is in-progress
+2. Verify (`pnpm test` + `pnpm lint` + smoke test)
+3. Commit + push only when user explicitly says so
+4. Suggest next file from the open todo list
+
+Don't proactively start the next file. Ask first.
+
+---
+
+## 9. Hard rules (do not violate)
+
+- Don't push to `main` without explicit "push" instruction
+- Don't run destructive git commands (`reset --hard`, `force push`, `branch -D`)
+- Don't commit `.env` or any `*.env.local`
+- Don't add `--no-verify` to git commands
+- Don't install new packages without asking (pnpm install is slow on this machine)
+- Don't refactor the Command Center (`app/dashboard/command-center/*`) — internal tool, low priority
+- Don't touch `proxy.ts` rate-limit logic — it's tuned and works
